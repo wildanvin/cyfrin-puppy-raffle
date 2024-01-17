@@ -32,6 +32,8 @@ contract PuppyRaffleTest is Test {
         players[0] = playerOne;
         puppyRaffle.enterRaffle{value: entranceFee}(players);
         assertEq(puppyRaffle.players(0), playerOne);
+        // hvz here you can enter the raffle but the winner won't be able to get the prize
+        // hvz because there are not 4 players
     }
 
     function testCantEnterWithoutPaying() public {

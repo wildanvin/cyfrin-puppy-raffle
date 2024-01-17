@@ -10,8 +10,10 @@ import {Base64} from "lib/base64/base64.sol";
 /// @author PuppyLoveDAO
 /// @notice This project is to enter a raffle to win a cute dog NFT. The protocol should do the following:
 /// 1. Call the `enterRaffle` function with the following parameters:
-///    1. `address[] participants`: A list of addresses that enter. You can use this to enter yourself multiple times, or yourself and a group of your friends. 
-/// 2. Duplicate addresses are not allowed. // hvz if you enter yourself multiple times duplicate addresses are allowed, rigth?
+///    1. `address[] participants`: A list of addresses that enter. You can use this to enter yourself multiple times, or yourself and a group of your friends. // hvz it is not very clear when it says:  
+// hvz "You can use this to enter yourself multiple times" it would be better if it says:
+// hvz "You can use this to participate in multiple raffles"
+/// 2. Duplicate addresses are not allowed. 
 /// 3. Users are allowed to get a refund of their ticket & `value` if they call the `refund` function
 /// 4. Every X seconds, the raffle will be able to draw a winner and be minted a random puppy
 /// 5. The owner of the protocol will set a feeAddress to take a cut of the `value`, and the rest of the funds will be sent to the winner of the puppy.
@@ -22,7 +24,7 @@ contract PuppyRaffle is ERC721, Ownable {
 
     address[] public players;
     uint256 public raffleDuration;
-    uint256 public raffleStartTime; // hvz could be constant or immutable to save gas
+    uint256 public raffleStartTime; 
     address public previousWinner;
 
     // We do some storage packing to save gas
@@ -77,6 +79,7 @@ contract PuppyRaffle is ERC721, Ownable {
     /// @notice duplicate entrants are not allowed
     /// @param newPlayers the list of players to enter the raffle
     // hvz would be good to check for the empty array
+    // hvz you can enter the raffle with less that 4 players
     function enterRaffle(address[] memory newPlayers) public payable {
         require(msg.value == entranceFee * newPlayers.length, "PuppyRaffle: Must send enough to enter raffle");
         for (uint256 i = 0; i < newPlayers.length; i++) {
@@ -84,7 +87,6 @@ contract PuppyRaffle is ERC721, Ownable {
         }
 
         // Check for duplicates
-        // hvz it is checking only for continuous duplicates
         for (uint256 i = 0; i < players.length - 1; i++) {
             for (uint256 j = i + 1; j < players.length; j++) {
                 require(players[i] != players[j], "PuppyRaffle: Duplicate player");
@@ -167,6 +169,7 @@ contract PuppyRaffle is ERC721, Ownable {
         previousWinner = winner;
         (bool success,) = winner.call{value: prizePool}("");
         // hvz would be better a pull over push approach otherwise a DoS could happen
+        // hvz also don't forget to check what a function returns
         require(success, "PuppyRaffle: Failed to send prize pool to winner");
         _safeMint(winner, tokenId);
         // hvz _safeMint makes sure that the smart contract can handle the nft
