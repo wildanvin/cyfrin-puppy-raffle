@@ -6,6 +6,9 @@ import {Test, console} from "forge-std/Test.sol";
 import {PuppyRaffle} from "../src/PuppyRaffle.sol";
 
 contract PuppyRaffleTest is Test {
+
+    event RaffleEnter(address[] newPlayers);
+
     PuppyRaffle puppyRaffle;
     uint256 entranceFee = 1e18;
     address playerOne = address(1);
@@ -34,6 +37,13 @@ contract PuppyRaffleTest is Test {
         assertEq(puppyRaffle.players(0), playerOne);
         // hvz here you can enter the raffle but the winner won't be able to get the prize
         // hvz because there are not 4 players
+    }
+
+    function testCanEnterWithEmptyArray() public {
+        address[] memory players = new address[](0);
+        vm.expectEmit(false, false, false, false);
+        emit RaffleEnter(players);
+        puppyRaffle.enterRaffle(players); 
     }
 
     function testCantEnterWithoutPaying() public {

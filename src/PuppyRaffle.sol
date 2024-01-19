@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.7.6; // hvz look for under/overflow if there is no SafeMath.sol 
 
+import {Test, console} from "forge-std/Test.sol";
 import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
@@ -29,7 +30,7 @@ contract PuppyRaffle is ERC721, Ownable {
 
     // We do some storage packing to save gas
     address public feeAddress;
-    uint64 public totalFees = 0;
+    uint64 public totalFees = 0; // hvz Possible overflow
 
     // mappings to keep track of token traits
     mapping(uint256 => uint256) public tokenIdToRarity;
@@ -88,6 +89,7 @@ contract PuppyRaffle is ERC721, Ownable {
 
         // Check for duplicates
         for (uint256 i = 0; i < players.length - 1; i++) {
+            console.log("logging from PuppyRaffle:enterRaffle -> first for: ", i);
             for (uint256 j = i + 1; j < players.length; j++) {
                 require(players[i] != players[j], "PuppyRaffle: Duplicate player");
             }
