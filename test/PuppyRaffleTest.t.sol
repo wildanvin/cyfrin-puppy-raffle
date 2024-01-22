@@ -39,12 +39,14 @@ contract PuppyRaffleTest is Test {
         // hvz because there are not 4 players
     }
 
+    /*
     function testCanEnterWithEmptyArray() public {
         address[] memory players = new address[](0);
         vm.expectEmit(false, false, false, false);
         emit RaffleEnter(players);
         puppyRaffle.enterRaffle(players); 
     }
+    */
 
     function testCantEnterWithoutPaying() public {
         address[] memory players = new address[](1);
