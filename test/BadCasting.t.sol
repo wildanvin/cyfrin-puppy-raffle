@@ -41,7 +41,7 @@ contract BadCasting is Test {
         players[3] = playerFour;
         
         puppyRaffle.enterRaffle{value: entranceFee * 4}(players);
-        console.log("Players 1 & 2 have entered the raffle");
+        console.log("Players 1, 2, 3 & 4 have entered the raffle");
         
         // The fee address should recive 20% of the total entrance fees
         uint256 correctFee = ((entranceFee * 4) * 20) / 100;
