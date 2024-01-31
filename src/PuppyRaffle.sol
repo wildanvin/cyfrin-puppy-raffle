@@ -81,7 +81,7 @@ contract PuppyRaffle is ERC721, Ownable {
     /// @notice duplicate entrants are not allowed
     /// @param newPlayers the list of players to enter the raffle
     // hvz would be good to check for the empty array
-    // hvz you can enter the raffle with less than 4 players
+    // hvz you can enter the raffle with less than 4 players.Would be better if it reverts when players are < 4
     function enterRaffle(address[] memory newPlayers) public payable {
         require(msg.value == entranceFee * newPlayers.length, "PuppyRaffle: Must send enough to enter raffle");
         for (uint256 i = 0; i < newPlayers.length; i++) {
@@ -89,6 +89,9 @@ contract PuppyRaffle is ERC721, Ownable {
         }
 
         // Check for duplicates
+        // hvz this double for loop will make enter the raffle very expensive 
+        // hvz especially for the last players, when the array gets bigger-
+        // consider using a mapping instead
         for (uint256 i = 0; i < players.length - 1; i++) {
             console.log("logging from PuppyRaffle:enterRaffle -> first for: ", i);
             for (uint256 j = i + 1; j < players.length; j++) {
@@ -134,7 +137,7 @@ contract PuppyRaffle is ERC721, Ownable {
 
     /// @notice this function will select a winner and mint a puppy
     /// @notice there must be at least 4 players, and the duration has occurred
-    // hvz the four players is not enforced when creating the code
+    // hvz the four players is not enforced when creating the raffle
      
     /// @notice the previous winner is stored in the previousWinner variable
     /// @dev we use a hash of on-chain data to generate the random numbers
@@ -197,6 +200,7 @@ contract PuppyRaffle is ERC721, Ownable {
 
     /// @notice this function will return true if the msg.sender is an active player
     // hvz this function should be external?
+    // hvz consider using a mapping
     function _isActivePlayer() internal view returns (bool) {
         for (uint256 i = 0; i < players.length; i++) {
             if (players[i] == msg.sender) {
