@@ -81,7 +81,6 @@ contract PuppyRaffle is ERC721, Ownable {
     /// @notice duplicate entrants are not allowed
     /// @param newPlayers the list of players to enter the raffle
     // hvz would be good to check for the empty array
-    // hvz you can enter the raffle with less than 4 players.Would be better if it reverts when players are < 4
     function enterRaffle(address[] memory newPlayers) public payable {
         require(msg.value == entranceFee * newPlayers.length, "PuppyRaffle: Must send enough to enter raffle");
         for (uint256 i = 0; i < newPlayers.length; i++) {
@@ -90,8 +89,8 @@ contract PuppyRaffle is ERC721, Ownable {
 
         // Check for duplicates
         // hvz this double for loop will make enter the raffle very expensive 
-        // hvz especially for the last players, when the array gets bigger-
-        // consider using a mapping instead
+        // hvz especially for the last players, when the array gets bigger
+        // hvz consider using a mapping instead
         for (uint256 i = 0; i < players.length - 1; i++) {
             console.log("logging from PuppyRaffle:enterRaffle -> first for: ", i);
             for (uint256 j = i + 1; j < players.length; j++) {
@@ -103,7 +102,7 @@ contract PuppyRaffle is ERC721, Ownable {
 
     /// @param playerIndex the index of the player to refund. You can find it externally by calling `getActivePlayerIndex`
     /// @dev This function will allow there to be blank spots in the array
-    // hvz if there is a blank spot and it wins the zero address will get the ether and it wil
+    // hvz if there is a blank spot and it wins the zero address will get the ether and it will
     // hvz get stuck
     function refund(uint256 playerIndex) public {
         address playerAddress = players[playerIndex];
@@ -125,7 +124,6 @@ contract PuppyRaffle is ERC721, Ownable {
     /// @param player the address of a player in the raffle
     /// @return the index of the player in the array, if they are not active, it returns 0
 
-    //hvz how this could be a denial of service attack? i can't see
     function getActivePlayerIndex(address player) external view returns (uint256) {
         for (uint256 i = 0; i < players.length; i++) {
             if (players[i] == player) {
@@ -137,8 +135,6 @@ contract PuppyRaffle is ERC721, Ownable {
 
     /// @notice this function will select a winner and mint a puppy
     /// @notice there must be at least 4 players, and the duration has occurred
-    // hvz the four players is not enforced when creating the raffle
-     
     /// @notice the previous winner is stored in the previousWinner variable
     /// @dev we use a hash of on-chain data to generate the random numbers
     // hvz weak random generation 
@@ -147,7 +143,6 @@ contract PuppyRaffle is ERC721, Ownable {
     function selectWinner() external {
         require(block.timestamp >= raffleStartTime + raffleDuration, "PuppyRaffle: Raffle not over");
         require(players.length >= 4, "PuppyRaffle: Need at least 4 players");
-        // hvz there could be a DoS if you create a raffle with less than 4 players
         uint256 winnerIndex =
             uint256(keccak256(abi.encodePacked(msg.sender, block.timestamp, block.difficulty))) % players.length;
         address winner = players[winnerIndex];
@@ -170,7 +165,7 @@ contract PuppyRaffle is ERC721, Ownable {
         }
 
         delete players;
-        // hvz does this deletes all etries of the array? or how exactly it is deleted?
+        
         raffleStartTime = block.timestamp;
         previousWinner = winner;
         (bool success,) = winner.call{value: prizePool}("");
