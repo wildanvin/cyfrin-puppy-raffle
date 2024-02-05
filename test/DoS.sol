@@ -67,4 +67,33 @@ contract DoS is Test {
         assert(gasCostC > gasCostB);
         assert(gasCostB > gasCostA);
     }
+
+    function test_denialOfServiceV2 () public {
+        uint256 numberOfPlayers = 100;
+        address[] memory players100 = new address[](100);
+        address[] memory players200 = new address[](100);
+
+
+        for (uint256 i = 0; i < numberOfPlayers; ++i){
+            players100[i] = address(i);
+        }
+
+        for (uint256 i = 0; i < numberOfPlayers; ++i){
+            players200[i] = address(i + 100);
+        }
+
+        uint256 gasStart100 = gasleft();
+        puppyRaffle.enterRaffle{value: entranceFee * numberOfPlayers}(players100);
+        uint256 gasCost100 = gasStart100 - gasleft(); 
+        console2.log("Gas for entering first 100 players:", gasCost100);
+
+        uint256 gasStart200 = gasleft();
+        puppyRaffle.enterRaffle{value: entranceFee * numberOfPlayers}(players200);
+        uint256 gasCost200 = gasStart200 - gasleft(); 
+        console2.log("Gas for entering second 100 players:", gasCost200);
+
+        assert(gasCost100 < gasCost200);
+
+
+    }
 }
